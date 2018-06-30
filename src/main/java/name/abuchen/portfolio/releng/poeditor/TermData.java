@@ -1,14 +1,14 @@
 package name.abuchen.portfolio.releng.poeditor;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 
 import com.essiembre.eclipse.rbe.model.bundle.Bundle;
@@ -20,7 +20,7 @@ public class TermData
     private Set<Term> localTerms = new HashSet<>();
     private Map<String, BundleGroup> context2group;
 
-    public static TermData create(Config config) throws FileNotFoundException
+    public static TermData create(Config config) throws IOException
     {
         Set<Term> localTerms = new HashSet<>();
         Map<String, BundleGroup> context2group = new HashMap<>();
@@ -54,19 +54,17 @@ public class TermData
                 }
             }
 
-            bundleGroup.getKeys().forEach(key -> localTerms.add(new Term(key, artifact.getContext())));
+            bundleGroup.getKeys().stream().filter(artifact.getFilter())
+                            .forEach(key -> localTerms.add(new Term(key, artifact.getContext())));
         }
 
         return new TermData(localTerms, context2group);
     }
 
-    private static Bundle load(File file) throws FileNotFoundException
+    private static Bundle load(File file) throws IOException
     {
-        try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.name()))
-        {
-            String properties = scanner.useDelimiter("\\A").next();
-            return XPropertiesParser.parse(properties);
-        }
+        String properties = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8.name());
+        return XPropertiesParser.parse(properties);
     }
 
     private TermData(Set<Term> localTerms, Map<String, BundleGroup> context2group)
