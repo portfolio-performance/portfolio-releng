@@ -252,7 +252,13 @@ public class POEditorAPI
     {
         JSONArray array = new JSONArray();
 
-        for (Term term : terms)
+        List<Term> sorted = new ArrayList<>(terms);
+        Collections.sort(sorted, (r, l) -> {
+            int compare = r.getContext().compareTo(l.getContext());
+            return compare != 0 ? compare : r.getTerm().compareTo(l.getTerm());
+        });
+
+        for (Term term : sorted)
         {
             JSONObject t = new JSONObject();
             t.put("term", term.getTerm());
