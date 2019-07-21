@@ -47,7 +47,7 @@ public class DownloadTranslationsTask implements Task
             }
 
             bundleGroup.addBundleEntry(locale,
-                            new BundleEntry(term.getTerm(), term.getDefinition(), term.getComment()));
+                            new BundleEntry(term.getTerm(), term.getDefinition(), null));
         }
 
         for (Map.Entry<String, BundleGroup> entry : data.getContext2group().entrySet())
