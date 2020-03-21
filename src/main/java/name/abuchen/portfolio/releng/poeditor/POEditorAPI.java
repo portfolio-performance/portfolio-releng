@@ -162,7 +162,7 @@ public class POEditorAPI
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("api_token", config.getToken()));
         urlParameters.add(new BasicNameValuePair("id", config.getProjectId()));
-        urlParameters.add(new BasicNameValuePair("language", language.getLanguage()));
+        urlParameters.add(new BasicNameValuePair("language", language.toLanguageTag()));
         urlParameters.add(new BasicNameValuePair("type", "json"));
         urlParameters.add(new BasicNameValuePair("filters", "translated"));
 

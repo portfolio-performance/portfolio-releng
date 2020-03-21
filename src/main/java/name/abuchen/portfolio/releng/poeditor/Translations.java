@@ -75,7 +75,7 @@ public class Translations
 
     public List<Locale> getLanguages()
     {
-        return languages.stream().map(Locale::new).collect(Collectors.toList());
+        return languages.stream().map(Locale::forLanguageTag).collect(Collectors.toList());
     }
 
     public List<Artifact> getArtifacts()

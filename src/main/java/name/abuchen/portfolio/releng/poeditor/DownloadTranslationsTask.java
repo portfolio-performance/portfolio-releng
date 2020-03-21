@@ -65,7 +65,7 @@ public class DownloadTranslationsTask implements Task
             String path = artifact.getPath() + File.separator + artifact.getFilename();
 
             if (!config.getTranslations().getDefaultLanguage().equals(locale))
-                path = path + "_" + locale.getLanguage();
+                path = path + "_" + locale;
 
             File bundleFile = new File(config.getSourceDirectory(), path + ".properties");
 
