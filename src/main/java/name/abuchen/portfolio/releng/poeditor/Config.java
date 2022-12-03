@@ -34,6 +34,7 @@ public class Config
             throw new IllegalArgumentException(args[4] + " does not exist");
 
         XStream xstream = new XStream();
+        xstream.allowTypesByWildcard(new String[] { "name.abuchen.portfolio.releng.**" });
         xstream.alias("translations", Translations.class);
         xstream.alias("artifact", Translations.Artifact.class);
 
