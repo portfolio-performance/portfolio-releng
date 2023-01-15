@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.releng.poeditor;
 
 import java.io.IOException;
-import java.util.Locale;
 import java.util.Set;
 
 public class UploadTranslationsTask implements Task
@@ -19,7 +18,7 @@ public class UploadTranslationsTask implements Task
 
         api.uploadTranslations(terms, data.getContext2group(), config.getTranslations().getDefaultLanguage());
 
-        for (Locale locale : config.getTranslations().getLanguages())
+        for (Language language : config.getTranslations().getLanguages())
         {
             try
             {
@@ -29,7 +28,7 @@ public class UploadTranslationsTask implements Task
             {
                 Thread.currentThread().interrupt();
             }
-            api.uploadTranslations(terms, data.getContext2group(), locale);
+            api.uploadTranslations(terms, data.getContext2group(), language);
         }
     }
 

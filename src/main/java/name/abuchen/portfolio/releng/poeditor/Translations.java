@@ -2,7 +2,6 @@ package name.abuchen.portfolio.releng.poeditor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -64,18 +63,18 @@ public class Translations
         }
     }
 
-    private String defaultLanguage;
-    private List<String> languages = new ArrayList<>();
+    private Language defaultLanguage;
+    private List<Language> languages = new ArrayList<>();
     private List<Artifact> artifacts = new ArrayList<>();
 
-    public Locale getDefaultLanguage()
+    public Language getDefaultLanguage()
     {
-        return Locale.forLanguageTag(defaultLanguage);
+        return defaultLanguage;
     }
 
-    public List<Locale> getLanguages()
+    public List<Language> getLanguages()
     {
-        return languages.stream().map(Locale::forLanguageTag).collect(Collectors.toList());
+        return languages;
     }
 
     public List<Artifact> getArtifacts()

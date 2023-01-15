@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,23 +33,23 @@ public class TermData
             File file = new File(config.getSourceDirectory(),
                             artifact.getPath() + File.separator + artifact.getFilename() + ".properties");
 
-            bundleGroup.addBundle(config.getTranslations().getDefaultLanguage(), load(file));
+            bundleGroup.addBundle(config.getTranslations().getDefaultLanguage().getLocale(), load(file));
 
-            List<Locale> languages = config.getTranslations().getLanguages();
-            for (Locale language : languages)
+            List<Language> languages = config.getTranslations().getLanguages();
+            for (Language language : languages)
             {
                 File bundleFile = new File(config.getSourceDirectory(), artifact.getPath() + File.separator
-                                + artifact.getFilename() + "_" + language.getLanguage() + ".properties");
+                                + artifact.getFilename() + "_" + language.getIdentifier() + ".properties");
 
                 if (!bundleFile.exists())
                 {
                     Bundle bundle = new Bundle();
-                    bundleGroup.addBundle(language, bundle);
+                    bundleGroup.addBundle(language.getLocale(), bundle);
                 }
                 else
                 {
                     Bundle bundle = load(bundleFile);
-                    bundleGroup.addBundle(language, bundle);
+                    bundleGroup.addBundle(language.getLocale(), bundle);
                 }
             }
 

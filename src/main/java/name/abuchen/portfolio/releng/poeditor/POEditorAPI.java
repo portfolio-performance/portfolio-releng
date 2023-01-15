@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
@@ -126,7 +125,7 @@ public class POEditorAPI
         System.out.println(body);
     }
 
-    public void uploadTranslations(Collection<Term> terms, Map<String, BundleGroup> context2group, Locale language)
+    public void uploadTranslations(Collection<Term> terms, Map<String, BundleGroup> context2group, Language language)
                     throws IOException
     {
         String data = toJsonString(terms, context2group, language);
@@ -137,7 +136,7 @@ public class POEditorAPI
                         .addTextBody("api_token", config.getToken()) //
                         .addTextBody("id", config.getProjectId()) //
                         .addTextBody("updating", "translations") //
-                        .addTextBody("language", language.getLanguage()) //
+                        .addTextBody("language", language.getPoeditor()) //
                         .addTextBody("overwrite", "1")
                         .addBinaryBody("file", data.getBytes(StandardCharsets.UTF_8.name()),
                                         ContentType.APPLICATION_JSON, "data.json")
@@ -152,17 +151,17 @@ public class POEditorAPI
             throw new IOException(response.getStatusLine().toString());
 
         String body = EntityUtils.toString(response.getEntity());
-        System.out.println(body);
+        System.out.println(language.getIdentifier() + ": " + body);
     }
 
-    public List<TranslatedTerm> downloadTranslations(Locale language) throws IOException
+    public List<TranslatedTerm> downloadTranslations(Language language) throws IOException
     {
         HttpPost post = new HttpPost("https://api.poeditor.com/v2/projects/export");
 
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("api_token", config.getToken()));
         urlParameters.add(new BasicNameValuePair("id", config.getProjectId()));
-        urlParameters.add(new BasicNameValuePair("language", language.toLanguageTag()));
+        urlParameters.add(new BasicNameValuePair("language", language.getPoeditor()));
         urlParameters.add(new BasicNameValuePair("type", "json"));
         urlParameters.add(new BasicNameValuePair("filters", "translated"));
 
@@ -175,7 +174,7 @@ public class POEditorAPI
             throw new IOException(response.getStatusLine().toString());
 
         String body = EntityUtils.toString(response.getEntity());
-        System.out.println(body);
+        System.out.println(language.getIdentifier() + ": " + body);
 
         JSONObject responseData = (JSONObject) JSONValue.parse(body);
         if (responseData == null)
@@ -219,7 +218,7 @@ public class POEditorAPI
     }
 
     @SuppressWarnings("unchecked")
-    private String toJsonString(Collection<Term> terms, Map<String, BundleGroup> context2group, Locale language)
+    private String toJsonString(Collection<Term> terms, Map<String, BundleGroup> context2group, Language language)
     {
         JSONArray array = new JSONArray();
 
@@ -229,7 +228,7 @@ public class POEditorAPI
             if (bundleGroup == null)
                 continue;
 
-            BundleEntry entry = bundleGroup.getBundleEntry(language, term.getTerm());
+            BundleEntry entry = bundleGroup.getBundleEntry(language.getLocale(), term.getTerm());
             if (entry == null)
                 continue;
 

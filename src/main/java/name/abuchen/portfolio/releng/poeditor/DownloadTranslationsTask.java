@@ -23,19 +23,20 @@ public class DownloadTranslationsTask implements Task
     {
         POEditorAPI api = new POEditorAPI(config);
 
-        Locale defaultLocale = config.getTranslations().getDefaultLanguage();
-        save(config, data, api, defaultLocale);
+        Language defaultLanguage = config.getTranslations().getDefaultLanguage();
+        save(config, data, api, defaultLanguage);
 
-        for (Locale locale : config.getTranslations().getLanguages())
+        for (Language language : config.getTranslations().getLanguages())
         {
-            save(config, data, api, locale);
+            save(config, data, api, language);
         }
     }
 
-    private void save(Config config, TermData data, POEditorAPI api, Locale locale)
-                    throws IOException
+    private void save(Config config, TermData data, POEditorAPI api, Language language) throws IOException
     {
-        List<TranslatedTerm> translatedTerms = api.downloadTranslations(locale);
+        List<TranslatedTerm> translatedTerms = api.downloadTranslations(language);
+
+        final Locale locale = language.getLocale();
 
         for (TranslatedTerm term : translatedTerms)
         {
@@ -46,8 +47,7 @@ public class DownloadTranslationsTask implements Task
                 continue;
             }
 
-            bundleGroup.addBundleEntry(locale,
-                            new BundleEntry(term.getTerm(), term.getDefinition(), null));
+            bundleGroup.addBundleEntry(locale, new BundleEntry(term.getTerm(), term.getDefinition(), null));
         }
 
         for (Map.Entry<String, BundleGroup> entry : data.getContext2group().entrySet())
@@ -64,13 +64,13 @@ public class DownloadTranslationsTask implements Task
 
             String path = artifact.getPath() + File.separator + artifact.getFilename();
 
-            if (!config.getTranslations().getDefaultLanguage().equals(locale))
+            if (!config.getTranslations().getDefaultLanguage().equals(language))
                 path = path + "_" + locale;
 
             File bundleFile = new File(config.getSourceDirectory(), path + ".properties");
 
-            Files.write(bundleFile.toPath(), content.getBytes(StandardCharsets.UTF_8.name()),
-                            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(bundleFile.toPath(), content.getBytes(StandardCharsets.UTF_8.name()), StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING);
         }
     }
 

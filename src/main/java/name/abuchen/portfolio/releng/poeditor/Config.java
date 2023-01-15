@@ -37,6 +37,9 @@ public class Config
         xstream.allowTypesByWildcard(new String[] { "name.abuchen.portfolio.releng.**" });
         xstream.alias("translations", Translations.class);
         xstream.alias("artifact", Translations.Artifact.class);
+        xstream.alias("language", Language.class);
+        xstream.useAttributeFor(Language.class, "identifier");
+        xstream.useAttributeFor(Language.class, "poeditor");
 
         config.translations = (Translations) xstream.fromXML(translationsFile);
 
