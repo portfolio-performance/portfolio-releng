@@ -47,7 +47,10 @@ public class DownloadTranslationsTask implements Task
                 continue;
             }
 
-            bundleGroup.addBundleEntry(locale, new BundleEntry(term.getTerm(), term.getDefinition(), null));
+            // remove leading and trailing white space
+            String value = trim(term.getDefinition());
+
+            bundleGroup.addBundleEntry(locale, new BundleEntry(term.getTerm(), value, null));
         }
 
         for (Map.Entry<String, BundleGroup> entry : data.getContext2group().entrySet())
@@ -74,4 +77,37 @@ public class DownloadTranslationsTask implements Task
         }
     }
 
+    /**
+     * Since {@see String#trim} does not trim all whitespace and space
+     * characters, this is an alternative implementation. Inspired by the blog
+     * post at http://closingbraces.net/2008/11/11/javastringtrim/
+     */
+    private String trim(String value)
+    {
+        if (value == null)
+            return null;
+
+        int len = value.length();
+        int st = 0;
+
+        while ((st < len) && isWhitespace(value.charAt(st)))
+        {
+            st++;
+        }
+
+        while ((st < len) && Character.isWhitespace(value.charAt(len - 1)))
+        {
+            len--;
+        }
+        return ((st > 0) || (len < value.length())) ? value.substring(st, len) : value;
+
+    }
+
+    private boolean isWhitespace(char c)
+    {
+        if (Character.isWhitespace(c) || Character.isSpaceChar(c))
+            return true;
+
+        return c == '\uFEFF'; // zero width no-break space
+    }
 }
