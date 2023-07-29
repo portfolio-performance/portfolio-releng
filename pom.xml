@@ -128,7 +128,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>name.abuchen.portfolio.releng.poeditor.App</mainClass>
+							<mainClass>name.abuchen.portfolio.releng.App</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
