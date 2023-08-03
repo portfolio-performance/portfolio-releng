@@ -38,8 +38,8 @@ public class App
 
         var releaseNumber = extractReleaseNumber(document);
         var releaseDate = extractReleaseDate(document);
-        List<String> germanBulletPoints = extractBulletPoints(document, "de");
-        List<String> englishBulletPoints = extractBulletPoints(document, "en");
+        List<String> germanBulletPoints = extractBulletPoints(document, "de", releaseNumber);
+        List<String> englishBulletPoints = extractBulletPoints(document, "en", releaseNumber);
 
         switch (task)
         {
@@ -85,24 +85,34 @@ public class App
         return LocalDate.parse(((Element) ulNodes.item(0)).getAttribute("date"));
     }
 
-    public static List<String> extractBulletPoints(Document document, String language)
+    public static List<String> extractBulletPoints(Document document, String language, String desiredVersion)
     {
         List<String> bulletPoints = new ArrayList<>();
-
-        NodeList ulNodes = document.getElementsByTagName("ul");
-        for (int ii = 0; ii < ulNodes.getLength(); ii++)
+        NodeList releaseNodes = document.getElementsByTagName("release");
+        for (int i = 0; i < releaseNodes.getLength(); i++)
         {
-            Element ulElement = (Element) ulNodes.item(ii);
+            Element releaseElement = (Element) releaseNodes.item(i);
+            String version = releaseElement.getAttribute("version");
 
-            String lang = ulElement.getAttribute("xml:lang");
-            if (lang.equals(language))
+            if (desiredVersion.equals(version))
             {
-                NodeList liNodes = ulElement.getElementsByTagName("li");
-                for (int j = 0; j < liNodes.getLength(); j++)
+                NodeList ulNodes = releaseElement.getElementsByTagName("ul");
+                for (int j = 0; j < ulNodes.getLength(); j++)
                 {
-                    Element liElement = (Element) liNodes.item(j);
-                    String bulletPoint = liElement.getTextContent().trim();
-                    bulletPoints.add(bulletPoint);
+                    Element ulElement = (Element) ulNodes.item(j);
+                    String lang = ulElement.getAttribute("xml:lang");
+
+                    if (lang.equals(language) || ("en".equals(language) && lang.isEmpty()))
+                    {
+                        NodeList liNodes = ulElement.getElementsByTagName("li");
+                        for (int k = 0; k < liNodes.getLength(); k++)
+                        {
+                            Element liElement = (Element) liNodes.item(k);
+                            String bulletPoint = liElement.getTextContent().trim();
+                            bulletPoints.add(bulletPoint);
+                        }
+                        break;
+                    }
                 }
                 break;
             }
