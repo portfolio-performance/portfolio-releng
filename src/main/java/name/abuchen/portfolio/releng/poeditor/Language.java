@@ -29,7 +29,9 @@ public class Language
 
     public Locale getLocale()
     {
-        return Locale.forLanguageTag(identifier);
+        final int index = identifier.indexOf('_');
+        return index >= 0 ? new Locale(identifier.substring(0, index), identifier.substring(index + 1))
+                        : Locale.forLanguageTag(identifier);
     }
 
 }
