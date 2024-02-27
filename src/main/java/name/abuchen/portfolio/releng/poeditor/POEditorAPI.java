@@ -235,7 +235,7 @@ public class POEditorAPI
             JSONObject t = new JSONObject();
             t.put("term", term.getTerm());
             t.put("context", term.getContext());
-            t.put("definition", entry.getValue());
+            t.put("definition", fixApostrophes(entry.getValue()));
 
             if (!entry.getComment().isEmpty())
                 t.put("comment", entry.getComment());
@@ -244,6 +244,14 @@ public class POEditorAPI
         }
 
         return array.toJSONString();
+    }
+
+    private String fixApostrophes(String input)
+    {
+        if (input == null || !input.contains("{"))
+            return input;
+        else
+            return input.replace("''", "'");
     }
 
     @SuppressWarnings("unchecked")

@@ -48,7 +48,7 @@ public class DownloadTranslationsTask implements Task
             }
 
             // remove leading and trailing white space
-            String value = trim(term.getDefinition());
+            String value = fixApostrophes(trim(term.getDefinition()));
 
             bundleGroup.addBundleEntry(locale, new BundleEntry(term.getTerm(), value, null));
         }
@@ -75,6 +75,39 @@ public class DownloadTranslationsTask implements Task
             Files.write(bundleFile.toPath(), content.getBytes(StandardCharsets.UTF_8.name()), StandardOpenOption.CREATE,
                             StandardOpenOption.TRUNCATE_EXISTING);
         }
+    }
+
+    public static String fixApostrophes(String input)
+    {
+        // fix the apostrophe only if the label is (most likely) used by
+        // MessageFormat, i.e. if it contains a placeholder indicated by a curly
+        // brace
+        if (input == null || !input.contains("{"))
+            return input;
+
+        StringBuilder modifiedString = new StringBuilder();
+        for (int ii = 0; ii < input.length(); ii++)
+        {
+            char currentChar = input.charAt(ii);
+
+            // check if the current character is a single quote
+            if (currentChar == '\'')
+            {
+                modifiedString.append("''");
+
+                // skip next character if we have double quotes already
+                if (ii + 1 < input.length() && input.charAt(ii + 1) == '\'')
+                {
+                    ii++;
+                }
+            }
+            else
+            {
+                modifiedString.append(currentChar);
+            }
+        }
+
+        return modifiedString.toString();
     }
 
     /**
